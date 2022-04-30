@@ -5,7 +5,6 @@
 state("SplinterCell") {
   string255 map: "SNDDSound3DDLL_VBR.dll", 0x6146C;
   bool cutscene: "Echelon.DLL", 0x9F1D8, 0x188;
-  bool loading: "Echelon.DLL", 0x9F20C, 0x190;
   bool fireMenu: "EchelonHUD.DLL", 0x4AD08, 0xB54; 
   bool menu: "Engine.dll", 0xECF00, 0x0;
   bool saveLoad: "Engine.dll", 0x2EFBB0, 0x0;
@@ -13,7 +12,7 @@ state("SplinterCell") {
 }
 
 isLoading {
-  return (current.saveLoad || current.loading || current.levelLoad == 32);
+  return (current.saveLoad || current.levelLoad == 32);
 }
 
 start {
