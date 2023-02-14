@@ -4,7 +4,6 @@
 
 state("SplinterCell") {
   string255 map: "SNDDSound3DDLL_VBR.dll", 0x6146C;
-  bool cutscene: "Echelon.DLL", 0x9F1D8, 0x188;
   bool fireMenu: "EchelonHUD.DLL", 0x4AD08, 0xB54; 
   bool menu: "Engine.dll", 0xECF00, 0x0;
   bool saveLoad: "Engine.dll", 0x2EFBB0, 0x0;
@@ -24,8 +23,7 @@ reset {
 }
 
 split {
-  bool levelChange = (current.levelLoad == 32 && old.levelLoad == 96);
-  bool endGame = (current.map == "5_1_2_PresidentialPalace" && !current.cutscene && old.cutscene);
+  bool levelChange = (current.levelLoad == 32 && old.levelLoad == 96 && current.map != "0_0_1_Training");
 
-  return (levelChange || endGame) && !current.menu;
+  return levelChange && !current.menu;
 }
