@@ -17,10 +17,11 @@ state("SplinterCell") {
 startup
 {
     settings.Add("intro_skip", true, "Intro Skip");
+    settings.Add("no_subsplits", false, "Only Split on Level Change");
     settings.Add("run_end_split", false, "Split at End of Run (READ DESCRIPTION FIRST!)");
 
     settings.SetToolTip("intro_skip", "Auto start timer for runners who choose to skip the intro.");
-
+    settings.SetToolTip("no_subsplits", "Deactivate splitting on map change within the same level. (i.e. when entering Training Part 2)");
     settings.SetToolTip("run_end_split", @"This will erroneously split on Presidential Palace and Vselka Submarine 
     when the HUD disappears to any Mission Fail other than dying to damage. 
     Activate this at your own risk and only if you know what you are doing!");
@@ -29,6 +30,10 @@ startup
     vars.xstart = 3844.277832f;
     vars.ystart = -1142.266724f;
     // vars.zstart = 56.13057327f; // Altitude. Keeping it in just in case.
+
+    // First map name of each multi part level except Training (used for no_subsplits option)
+    vars.maps = new string[] {"1_1_0Tbilisi", "1_2_1DefenseMinistry", "1_3_2CaspianOilRefinery", "2_1_0CIA", "2_2_1_Kalinatek", "4_1_1ChineseEmbassy",
+                "4_2_1_Abattoir", "4_3_0ChineseEmbassy", "5_1_1_PresidentialPalace", "1_6_1_1KolaCell", "1_7_1_1VselkaInfiltration", "1_7_1_2Vselka"};
 }
 
 isLoading {
@@ -48,10 +53,15 @@ reset {
 }
 
 split {
+
   bool levelChange = current.levelLoad == 32 && old.levelLoad == 96 && current.map != "0_0_1_Training";
 
   if (settings["run_end_split"] && (current.map == "5_1_2_PresidentialPalace" || current.map == "1_7_1_2Vselka")) {
-      return levelChange || (current.missionComplete && !old.missionComplete && current.health != 0);
+    return levelChange || (current.missionComplete && !old.missionComplete && current.health != 0) || (current.map == "1_7_1_2Vselka" && old.map != "1_7_1_2Vselka");
+  }
+
+  if (settings["no_subsplits"]) {
+    return (current.map != old.map && Array.IndexOf(vars.maps, current.map) != -1);
   }
 
   return levelChange && !current.menu;
